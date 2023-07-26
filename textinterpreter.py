@@ -43,7 +43,8 @@ def update_window(window, response_text, clipboard_content_prev=''):
 
 def update_content(response_text, content):
     response_text.insert(tk.END, content)
-
+    text.see(tk.END)
+    
 def clear_content(response_text):
     response_text.delete('1.0', tk.END)
 
