@@ -7,7 +7,7 @@ import sys
 import json
 from threading import Thread
 from typing import Generator
-from bot import get_explanation, initialize_openai_api_key, update_prompt
+from bot import get_explanation, initialize_openai_api_key, update_prompt, add_assistant_message
 from tkinter.ttk import Combobox
 
 # 创建窗口时，添加stop_sign属性
@@ -50,13 +50,16 @@ def clear_content(response_text):
 def produce_output(text: str, response_text, root, stop_sign: list, model_var):
     model = model_var.get()  # Get the current model
     response = get_explanation(text, model)
+    response_history = ""
     for chunk in response:
         if stop_sign[0]:  # Check the stop sign
             break
         if 'choices' in chunk and 'delta' in chunk['choices'][0]:
             delta = chunk['choices'][0]['delta']
             if 'content' in delta:
+                response_history += delta['content']
                 root.after(0, update_content, response_text, delta['content'])
+    add_assistant_message(response_history)
     root.thread_running = False  # Set the flag to False when the thread finishes
 
 def start_thread(clipboard_content, response_text, window):
