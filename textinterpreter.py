@@ -3,6 +3,7 @@ import tkinter as tk
 import functools
 import openai
 import os
+import sys
 import json
 from threading import Thread
 from typing import Generator
@@ -68,12 +69,21 @@ def start_thread(clipboard_content, response_text, window):
 def stop_thread(stop_sign: list):
     stop_sign[0] = True
 
+# Check if we're running as a script or frozen executable
+if getattr(sys, 'frozen', False):
+    application_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+elif __file__:
+    application_path = os.path.dirname(__file__)
+
+config_path = os.path.join(application_path, 'config.json')
+prompts_path = os.path.join(application_path, 'prompts.json')
+
 def get_config():
-    with open('config.json', 'r') as f:
+    with open(config_path, 'r') as f:
         return json.load(f)
 
 def save_config(config):
-    with open('config.json', 'w') as f:
+    with open(config_path, 'w') as f:
         json.dump(config, f)
 
 def create_combobox(root, models, model_var):
@@ -91,8 +101,8 @@ def create_combobox(root, models, model_var):
 
     return combo
 
-def load_prompts(filename):
-    with open(filename, 'r',encoding='utf-8') as file:
+def load_prompts():
+    with open(prompts_path, 'r',encoding='utf-8') as file:
         data = json.load(file)
         return {prompt['tag']: prompt['text'] for prompt in data['prompts']}
 
@@ -125,14 +135,12 @@ def main():
     models = config['models']
     combo = create_combobox(window, models, model_var)
     # 创建下拉菜单
-    prompts = load_prompts('prompts.json')
+    prompts = load_prompts()
     listbox = create_listbox(window, prompts)
     button = create_switch_button(window, listbox, prompts)
-    
     stop_button = tk.Button(window, text="Stop", command=lambda: stop_thread(stop_sign))
     stop_button.pack()
     update_window(window, response_text)
-
     window.mainloop()
 
 if __name__ == "__main__":

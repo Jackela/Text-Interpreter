@@ -71,3 +71,4 @@ def get_explanation(text:str, model:str) -> Generator:
 
 if __name__ == "__main__":
     initialize_openai_api_key()
+    get_response(get_messages(), "gpt-4")
