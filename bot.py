@@ -48,6 +48,7 @@ def create_conversation(prompt, max_messages=10):
     def update_prompt(new_prompt):
         messages.clear()
         messages.append({'role': 'user', 'content': new_prompt})
+    
 
     return get_messages, add_user_message, add_assistant_message, update_prompt
 
@@ -68,6 +69,7 @@ def get_explanation(text:str, model:str) -> Generator:
     messages = get_messages()
     response = get_response(messages, model)
     return response
+
 
 if __name__ == "__main__":
     initialize_openai_api_key()

@@ -15,6 +15,7 @@ def create_window(stop_sign, model_var):
     window = tk.Tk()
     model_var = tk.StringVar(window, value=model_var)  # Initialize StringVar with the value of model_var
     window.title("解释机器")
+    ## top most level of the screen
     window.attributes('-topmost', True)
     # Screen size
     screen_width = window.winfo_screenwidth()
@@ -106,7 +107,9 @@ def load_prompts():
         data = json.load(file)
         return {prompt['tag']: prompt['text'] for prompt in data['prompts']}
 
-def switch_prompt(listbox, prompts):
+def switch_prompt(listbox, prompts,response_text, stop_sign: list):
+    clear_content(response_text)
+    stop_sign[0] = True
     selected_prompt = listbox.get(tk.ACTIVE)
     update_prompt(prompts[selected_prompt])
 
@@ -117,9 +120,9 @@ def create_listbox(root, prompts):
     listbox.pack()
     return listbox
 
-def create_switch_button(root, listbox, prompts):
+def create_switch_button(root, listbox, prompts, response_text, stop_sign: list):
     button = tk.Button(root, text="Switch Prompt", 
-                command=lambda: switch_prompt(listbox, prompts))
+                command=lambda: switch_prompt(listbox, prompts, response_text, stop_sign))
     button.pack()
     return button
 
@@ -137,7 +140,7 @@ def main():
     # 创建下拉菜单
     prompts = load_prompts()
     listbox = create_listbox(window, prompts)
-    button = create_switch_button(window, listbox, prompts)
+    button = create_switch_button(window, listbox, prompts, response_text, stop_sign)
     stop_button = tk.Button(window, text="Stop", command=lambda: stop_thread(stop_sign))
     stop_button.pack()
     update_window(window, response_text)
